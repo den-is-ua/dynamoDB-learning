@@ -36,13 +36,14 @@ class DynamoDBService
         ]);
     }
 
-    public function get($id)
+    /**
+     * @param  array<string, mixed>  $key  All primary-key attributes (partition key and sort key if the table has one).
+     */
+    public function get(array $key)
     {
         $result = $this->client->getItem([
             'TableName' => $this->table,
-            'Key' => [
-                'id' => ['N' => (string)$id],
-            ],
+            'Key' => $this->marshaler->marshalItem($key),
         ]);
 
         return isset($result['Item'])

@@ -24,6 +24,6 @@ class DynamoDbCrudCommand extends Command
 //            'email' => 'test@test.com'
 //        ]);
         
-        dd($ddb->get(2));
+        dd($ddb->get(['id' => 2, 'sort' => 2]));
     }
 }
