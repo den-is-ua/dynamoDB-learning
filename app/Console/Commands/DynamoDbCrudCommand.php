@@ -15,7 +15,7 @@ class DynamoDbCrudCommand extends Command
      */
     public function handle()
     {
-        $ddb = new \App\Services\DynamoDBService('products');
+        $ddb = new \App\Services\DynamoDBService(config('dynamodb.default_table'));
         
 //        $result = $ddb->put([
 //            'id' => 2,

@@ -17,13 +17,16 @@ return [
     |
     */
     'credentials' => [
-        'key'    => env('AWS_ACCESS_KEY_ID', ''),
+        'key' => env('AWS_ACCESS_KEY_ID', ''),
         'secret' => env('AWS_SECRET_ACCESS_KEY', ''),
     ],
-    'region' => env('AWS_REGION', 'us-east-1'),
     /*
-    | Set DYNAMODB_ENDPOINT for DynamoDB Local (e.g. http://dynamodb-local:8000 in Sail,
-    | http://127.0.0.1:8000 when running PHP on the host). Leave unset for real AWS.
+    | Same resolution as Laravel core (filesystems, queue): prefer AWS_DEFAULT_REGION.
+    */
+    'region' => env('AWS_DEFAULT_REGION', env('AWS_REGION', 'us-east-1')),
+    /*
+    | DYNAMODB_ENDPOINT for DynamoDB Local (e.g. http://dynamodb-local:8000 in Sail,
+    | http://127.0.0.1:8000 when PHP runs on the host). Leave unset for AWS.
     */
     'dynamodb_endpoint' => env('DYNAMODB_ENDPOINT'),
     'version' => 'latest',
