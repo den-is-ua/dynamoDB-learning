@@ -14,14 +14,21 @@ class DynamoDBService
 {
     public function __construct(private $table)
     {
-        $this->client = new DynamoDbClient([
+        $clientConfig = [
             'region' => config('aws.region'),
             'version' => 'latest',
             'credentials' => [
                 'key' => config('aws.credentials.key'),
                 'secret' => config('aws.credentials.secret'),
             ],
-        ]);
+        ];
+
+        $endpoint = config('aws.dynamodb_endpoint');
+        if (filled($endpoint)) {
+            $clientConfig['endpoint'] = $endpoint;
+        }
+
+        $this->client = new DynamoDbClient($clientConfig);
 
         $this->marshaler = new Marshaler();
     }
