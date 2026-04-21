@@ -21,12 +21,8 @@ class DynamoDBService
                 'key' => config('aws.credentials.key'),
                 'secret' => config('aws.credentials.secret'),
             ],
+            'endpoint' => config('aws.dynamodb_endpoint'),
         ];
-
-        $endpoint = config('aws.dynamodb_endpoint');
-        if (filled($endpoint)) {
-            $clientConfig['endpoint'] = $endpoint;
-        }
 
         $this->client = new DynamoDbClient($clientConfig);
 
