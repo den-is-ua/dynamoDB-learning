@@ -5,6 +5,8 @@ namespace App\Console\Commands;
 use Illuminate\Console\Attributes\Description;
 use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
+use App\Services\DynamoDBService;
+
 
 #[Signature('ddb:test')]
 #[Description('Command description')]
@@ -15,15 +17,15 @@ class DynamoDbCrudCommand extends Command
      */
     public function handle()
     {
-        $ddb = new \App\Services\DynamoDBService(config('dynamodb.default_table'));
+        $start = microtime(true);
+        $ddb = new DynamoDBService(DynamoDBService::USER_EVENTS_TABLE);
         
-//        $result = $ddb->put([
-//            'id' => 2,
-//            'sort' => 2,
-//            'name' => 'Denys',
-//            'email' => 'test@test.com'
-//        ]);
+        $result = $ddb->getUserEventsByUserId(1);
+
+        $end = microtime(true);
+        $time = $end - $start;
         
-        dd($ddb->get(['id' => 2, 'sort' => 2]));
+        dump($result);
+        $this->info('Time taken: ' . $time . ' seconds');
     }
 }

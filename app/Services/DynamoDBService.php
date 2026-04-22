@@ -12,6 +12,9 @@ use Aws\DynamoDb\Marshaler;
  */
 class DynamoDBService 
 {
+    const USER_EVENTS_TABLE = 'user_events';
+
+    
     public function __construct(private $table)
     {
         $this->client = self::client();
@@ -86,5 +89,24 @@ class DynamoDBService
         return isset($result['Item'])
             ? $this->marshaler->unmarshalItem($result['Item'])
             : null;
+    }
+
+    /**
+     * @return array<int, array<string, mixed>>
+     */
+    public function getUserEventsByUserId(int $userId): array
+    {
+        $result = $this->client->query([
+            'TableName' => $this->table,
+            'KeyConditionExpression' => 'user_id = :user_id',
+            'ExpressionAttributeValues' => [
+                ':user_id' => $this->marshaler->marshalValue($userId),
+            ],
+            'ScanIndexForward' => false,
+        ]);
+
+        return array_map(function (array $item) {
+            return $this->marshaler->unmarshalItem($item);
+        }, $result['Items'] ?? []);
     }
 }
