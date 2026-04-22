@@ -1,17 +1,24 @@
-## About This Project
+# DynamoDB Learning Project
 
-This project is a learning project for using DynamoDB with Laravel.
+This repository is a **Laravel learning project focused on DynamoDB**.
 
-## Command: `ddb:test`
+It is used to practice:
+- creating DynamoDB tables and indexes
+- writing/reading data through a service layer
+- testing DynamoDB operations from an Artisan command
 
-Use this Artisan command to run a simple DynamoDB CRUD flow for testing the integration.
+## Test Command
+
+Run the DynamoDB test command:
 
 ```bash
 php artisan ddb:test
 ```
 
-What it does:
+The command executes DynamoDB reads through `DynamoDBService` and prints the result in the terminal.
 
-- Connects to DynamoDB using the configured AWS credentials.
-- Runs DynamoDB operations through `DynamoDBService`.
-- Prints results in the console so you can verify behavior quickly.
+## Deploy (Basic Steps)
+
+```bash
+docker compose up -d
+```
