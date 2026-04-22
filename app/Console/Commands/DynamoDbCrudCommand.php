@@ -22,7 +22,7 @@ class DynamoDbCrudCommand extends Command
         
         // $result = $ddb->getUserEventsByUserId(1);
         // $result = $ddb->scanUserEventsByUserId(2635);
-        $result = $ddb->getLatestUserEvents(10);    
+        $result = $ddb->getLatestUserEvents(100);    
         
         $end = microtime(true);
         $time = $end - $start;

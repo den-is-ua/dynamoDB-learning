@@ -16,13 +16,14 @@ class UserEventsSeeder extends Seeder
 
         $baseTs = time();
 
-        for ($i = 0; $i < 1000; $i++) {
+        for ($i = 0; $i < 100; $i++) {
 
             $items = [];
             for ($j = 0; $j < 100; $j++) {
                 $items[] = [
                     'user_id' => rand(1, 10000),
                     'timestamp' => $baseTs - rand(0, 1000000),
+                    'entity' => 'USER_EVENT',
                     'event_type' => ['view', 'click', 'purchase'][rand(0, 2)],
                     'payload' => json_encode(['page' => ['home', 'pricing', 'checkout'][rand(0, 2)]]),
                 ];
