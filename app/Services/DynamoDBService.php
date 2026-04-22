@@ -13,6 +13,8 @@ use Aws\DynamoDb\Marshaler;
 class DynamoDBService 
 {
     const USER_EVENTS_TABLE = 'user_events';
+    const LATEST_USER_EVENTS_INDEX = 'latest_user_events_index';
+    const USER_EVENT_ENTITY = 'USER_EVENT';
 
 
     public function __construct(private $table)
@@ -115,8 +117,6 @@ class DynamoDBService
      */
     public function scanUserEventsByUserId(int $userId): array
     {
-        $items = [];
-
         $params = [
             'TableName' => $this->table,
             'FilterExpression' => 'user_id = :user_id',
@@ -131,4 +131,30 @@ class DynamoDBService
             return $this->marshaler->unmarshalItem($item);
         }, $result['Items'] ?? []);
     }
+
+    /**
+     * @return array<int, array<string, mixed>>
+     */
+    public function getLatestUserEvents(int $limit): array
+    {
+        if ($limit <= 0) {
+            return [];
+        }
+
+        $result = $this->client->query([
+            'TableName' => $this->table,
+            'IndexName' => self::LATEST_USER_EVENTS_INDEX,
+            'KeyConditionExpression' => 'entity = :entity',
+            'ExpressionAttributeValues' => [
+                ':entity' => $this->marshaler->marshalValue(self::USER_EVENT_ENTITY),
+            ],
+            'ScanIndexForward' => false,
+            'Limit' => $limit,
+        ]);
+
+        return array_map(function (array $item) {
+            return $this->marshaler->unmarshalItem($item);
+        }, $result['Items'] ?? []);
+    }
+
 }
