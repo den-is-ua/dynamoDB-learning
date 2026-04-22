@@ -20,7 +20,8 @@ class DynamoDbCrudCommand extends Command
         $start = microtime(true);
         $ddb = new DynamoDBService(DynamoDBService::USER_EVENTS_TABLE);
         
-        $result = $ddb->getUserEventsByUserId(1);
+        // $result = $ddb->getUserEventsByUserId(1);
+        $result = $ddb->scanUserEventsByUserId(2635);
 
         $end = microtime(true);
         $time = $end - $start;

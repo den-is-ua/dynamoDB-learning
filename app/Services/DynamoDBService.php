@@ -14,7 +14,7 @@ class DynamoDBService
 {
     const USER_EVENTS_TABLE = 'user_events';
 
-    
+
     public function __construct(private $table)
     {
         $this->client = self::client();
@@ -104,6 +104,28 @@ class DynamoDBService
             ],
             'ScanIndexForward' => false,
         ]);
+
+        return array_map(function (array $item) {
+            return $this->marshaler->unmarshalItem($item);
+        }, $result['Items'] ?? []);
+    }
+
+    /**
+     * @return array<int, array<string, mixed>>
+     */
+    public function scanUserEventsByUserId(int $userId): array
+    {
+        $items = [];
+
+        $params = [
+            'TableName' => $this->table,
+            'FilterExpression' => 'user_id = :user_id',
+            'ExpressionAttributeValues' => [
+                ':user_id' => $this->marshaler->marshalValue($userId),
+            ],
+        ];
+
+        $result = $this->client->scan($params);
 
         return array_map(function (array $item) {
             return $this->marshaler->unmarshalItem($item);
