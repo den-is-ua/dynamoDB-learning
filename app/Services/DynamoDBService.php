@@ -14,7 +14,14 @@ class DynamoDBService
 {
     public function __construct(private $table)
     {
-        $clientConfig = [
+        $this->client = self::client();
+
+        $this->marshaler = new Marshaler();
+    }
+
+    public static function client(): DynamoDbClient
+    {
+        return new DynamoDbClient([
             'region' => config('aws.region'),
             'version' => 'latest',
             'credentials' => [
@@ -22,13 +29,14 @@ class DynamoDBService
                 'secret' => config('aws.credentials.secret'),
             ],
             'endpoint' => config('aws.dynamodb_endpoint'),
-        ];
-
-        $this->client = new DynamoDbClient($clientConfig);
-
-        $this->marshaler = new Marshaler();
+        ]);
     }
-    
+
+    private function marshaler(): Marshaler
+    {
+        return $this->marshaler;
+    }
+
     public function put(array $data)
     {
         $item = $this->marshaler->marshalItem($data);
@@ -37,6 +45,32 @@ class DynamoDBService
             'TableName' => $this->table,
             'Item' => $item,
         ]);
+    }
+
+    /**
+     * @param  array<int, array<string, mixed>>  $items
+     */
+    public function putBatch(array $items)
+    {
+        $responses = [];
+
+        foreach (array_chunk($items, 25) as $chunk) {
+            $requestItems = array_map(function (array $item) {
+                return [
+                    'PutRequest' => [
+                        'Item' => $this->marshaler->marshalItem($item),
+                    ],
+                ];
+            }, $chunk);
+
+            $responses[] = $this->client->batchWriteItem([
+                'RequestItems' => [
+                    $this->table => $requestItems,
+                ],
+            ]);
+        }
+
+        return $responses;
     }
 
     /**
